@@ -1,0 +1,70 @@
+# ========================
+# Global stuff
+# ========================
+*.log
+*.tmp
+*.swp
+*.DS_Store
+Thumbs.db
+
+# PowerShell scripts
+**/*.ps1
+
+# Local secrets
+.env
+.env.*
+
+# VSCode config
+.vscode/
+
+# ========================
+# Junk/test/dead files
+# ========================
+**/junk/
+**/* copy*
+**/*OLD*
+**/__tests__/
+**/__mocks__/
+
+# ========================
+# .NET backend
+# ========================
+backend/bin/
+backend/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+backend/HealthHub2.http
+backend/appsettings.Development.json
+backend/appsettings.json
+backend/Properties/launchSettings.json
+
+# ========================
+# Node & frontend stuff
+# ========================
+**/node_modules/
+**/dist/
+**/.angular/
+**/.next/
+**/.turbo/
+**/.eslintcache
+**/.parcel-cache/
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+**/package copy.json
+**/tsconfig copy.json
+
+# Images (optional)
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# ========================
+# Docker
+# ========================
+**/Dockerfile
