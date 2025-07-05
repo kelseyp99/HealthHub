@@ -353,149 +353,149 @@ function App() {
                 }}
               >{tab.label}</button>
             ))}
-            {/* Bear AdSense Ad */}
+            {/* Bear AdSense Ads */}
+            <BearAd />
+            <div style={{ height: 24 }} />
             <BearAd />
           </nav>
-          {/* Main Content */}
-          <main style={{ flex: 1, padding: '48px 48px 48px 0', overflowY: 'auto', background: 'linear-gradient(120deg, #23283a 60%, #181c24 100%)', borderRadius: 32, margin: 24, boxShadow: '0 4px 32px #0003', minHeight: 0 }}>
-            {error && <div style={{ color: 'salmon', marginBottom: 16 }}>{error}</div>}
-            {selectedTable === 'discussions' && (
-              <>
-                <h2 style={{ color: '#4fd1c5', marginBottom: 24 }}>Discussions</h2>
-                <form onSubmit={editId ? (e) => { e.preventDefault(); handleUpdateDiscussion(editId); } : handleCreateDiscussion} style={{ marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <input placeholder="Description" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
-                  <input placeholder="Type" value={form.typeSay || ''} onChange={e => setForm((f: any) => ({ ...f, typeSay: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} />
-                  <button type="submit" style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '8px 20px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>{editId ? 'Update' : 'Add'}</button>
-                  {editId && <button type="button" onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>}
-                </form>
-                <table style={{ width: '100%', color: 'white', background: '#23283a', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
-                  <thead>
-                    <tr style={{ background: '#2d3748' }}>
-                      <th style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>Description</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Timestamp</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Type</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Cleared</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {discussions.map((d: any) => (
-                      <tr key={d.id}>
-                        <td style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>{editId === d.id ? <input value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : d.description}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>{d.timestamp?.toDate ? d.timestamp.toDate().toLocaleString() : d.timestamp ? new Date(d.timestamp).toLocaleString() : ""}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>{editId === d.id ? <input value={form.typeSay || ''} onChange={e => setForm((f: any) => ({ ...f, typeSay: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : d.typeSay}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>{d.cleared ? "Yes" : "No"}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>
-                          {editId === d.id ? (
-                            <>
-                              <button onClick={() => handleUpdateDiscussion(d.id)} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Save</button>
-                              <button onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>
-                            </>
-                          ) : (
-                            <>
-                              <button onClick={() => { setEditId(d.id); setForm({ description: d.description, typeSay: d.typeSay }); }} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Edit</button>
-                              <button onClick={() => handleDeleteDiscussion(d.id)} style={{ background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
-                            </>
-                          )}
-                        </td>
+          {/* Main Content with scrollable area, no bottom ad */}
+          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '48px 48px 0 0', background: 'linear-gradient(120deg, #23283a 60%, #181c24 100%)', borderRadius: 32, margin: 24, boxShadow: '0 4px 32px #0003', minHeight: 0, position: 'relative', overflow: 'hidden' }}>
+            <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+              {error && <div style={{ color: 'salmon', marginBottom: 16 }}>{error}</div>}
+              {selectedTable === 'discussions' && (
+                <>
+                  <h2 style={{ color: '#4fd1c5', marginBottom: 24 }}>Discussions</h2>
+                  <form onSubmit={editId ? (e) => { e.preventDefault(); handleUpdateDiscussion(editId); } : handleCreateDiscussion} style={{ marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <input placeholder="Description" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
+                    <input placeholder="Type" value={form.typeSay || ''} onChange={e => setForm((f: any) => ({ ...f, typeSay: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} />
+                    <button type="submit" style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '8px 20px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>{editId ? 'Update' : 'Add'}</button>
+                    {editId && <button type="button" onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>}
+                  </form>
+                  <table style={{ width: '100%', color: 'white', background: '#23283a', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
+                    <thead>
+                      <tr style={{ background: '#2d3748' }}>
+                        <th style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>Description</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Timestamp</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Type</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Cleared</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {discussions.length === 0 && !error && <div>No discussions found.</div>}
-              </>
-            )}
-            {selectedTable === 'activityLogs' && (
-              <>
-                <h2 style={{ color: '#4fd1c5', marginBottom: 24 }}>Activity Logs</h2>
-                <form onSubmit={editId ? (e) => { e.preventDefault(); handleUpdateActivityLog(editId); } : handleCreateActivityLog} style={{ marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <input placeholder="Description" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
-                  <input placeholder="Category" value={form.category || ''} onChange={e => setForm((f: any) => ({ ...f, category: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
-                  <button type="submit" style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '8px 20px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>{editId ? 'Update' : 'Add'}</button>
-                  {editId && <button type="button" onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>}
-                </form>
-                <table style={{ width: '100%', color: 'white', background: '#23283a', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
-                  <thead>
-                    <tr style={{ background: '#2d3748' }}>
-                      <th style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>Description</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Category</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Timestamp</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activityLogs.map((a: any) => (
-                      <tr key={a.id}>
-                        <td style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>{editId === a.id ? <input value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : a.description}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>{editId === a.id ? <input value={form.category || ''} onChange={e => setForm((f: any) => ({ ...f, category: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : a.category}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>{a.timestamp?.toDate ? a.timestamp.toDate().toLocaleString() : a.timestamp ? new Date(a.timestamp).toLocaleString() : ""}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>
-                          {editId === a.id ? (
-                            <>
-                              <button onClick={() => handleUpdateActivityLog(a.id)} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Save</button>
-                              <button onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>
-                            </>
-                          ) : (
-                            <>
-                              <button onClick={() => { setEditId(a.id); setForm({ description: a.description, category: a.category }); }} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Edit</button>
-                              <button onClick={() => handleDeleteActivityLog(a.id)} style={{ background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
-                            </>
-                          )}
-                        </td>
+                    </thead>
+                    <tbody>
+                      {discussions.map((d: any) => (
+                        <tr key={d.id}>
+                          <td style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>{editId === d.id ? <input value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : d.description}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>{d.timestamp?.toDate ? d.timestamp.toDate().toLocaleString() : d.timestamp ? new Date(d.timestamp).toLocaleString() : ""}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>{editId === d.id ? <input value={form.typeSay || ''} onChange={e => setForm((f: any) => ({ ...f, typeSay: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : d.typeSay}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>{d.cleared ? "Yes" : "No"}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>
+                            {editId === d.id ? (
+                              <>
+                                <button onClick={() => handleUpdateDiscussion(d.id)} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Save</button>
+                                <button onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>
+                              </>
+                            ) : (
+                              <>
+                                <button onClick={() => { setEditId(d.id); setForm({ description: d.description, typeSay: d.typeSay }); }} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Edit</button>
+                                <button onClick={() => handleDeleteDiscussion(d.id)} style={{ background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {discussions.length === 0 && !error && <div>No discussions found.</div>}
+                </>
+              )}
+              {selectedTable === 'activityLogs' && (
+                <>
+                  <h2 style={{ color: '#4fd1c5', marginBottom: 24 }}>Activity Logs</h2>
+                  <form onSubmit={editId ? (e) => { e.preventDefault(); handleUpdateActivityLog(editId); } : handleCreateActivityLog} style={{ marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <input placeholder="Description" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
+                    <input placeholder="Category" value={form.category || ''} onChange={e => setForm((f: any) => ({ ...f, category: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
+                    <button type="submit" style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '8px 20px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>{editId ? 'Update' : 'Add'}</button>
+                    {editId && <button type="button" onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>}
+                  </form>
+                  <table style={{ width: '100%', color: 'white', background: '#23283a', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
+                    <thead>
+                      <tr style={{ background: '#2d3748' }}>
+                        <th style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>Description</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Category</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Timestamp</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {activityLogs.length === 0 && !error && <div>No activity logs found.</div>}
-              </>
-            )}
-            {selectedTable === 'categories' && (
-              <>
-                <h2 style={{ color: '#4fd1c5', marginBottom: 24 }}>Categories</h2>
-                <form onSubmit={editId ? (e) => { e.preventDefault(); handleUpdateCategory(editId); } : handleCreateCategory} style={{ marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <input placeholder="Name" value={form.name || ''} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
-                  <input placeholder="Description" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} />
-                  <button type="submit" style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '8px 20px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>{editId ? 'Update' : 'Add'}</button>
-                  {editId && <button type="button" onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>}
-                </form>
-                <table style={{ width: '100%', color: 'white', background: '#23283a', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
-                  <thead>
-                    <tr style={{ background: '#2d3748' }}>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Name</th>
-                      <th style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>Description</th>
-                      <th style={{ border: '1px solid #444', padding: '12px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {categories.map((c: any) => (
-                      <tr key={c.id}>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>{editId === c.id ? <input value={form.name || ''} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : c.name}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>{editId === c.id ? <input value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : c.description}</td>
-                        <td style={{ border: '1px solid #444', padding: '12px' }}>
-                          {editId === c.id ? (
-                            <>
-                              <button onClick={() => handleUpdateCategory(c.id)} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Save</button>
-                              <button onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>
-                            </>
-                          ) : (
-                            <>
-                              <button onClick={() => { setEditId(c.id); setForm({ name: c.name, description: c.description }); }} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Edit</button>
-                              <button onClick={() => handleDeleteCategory(c.id)} style={{ background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
-                            </>
-                          )}
-                        </td>
+                    </thead>
+                    <tbody>
+                      {activityLogs.map((a: any) => (
+                        <tr key={a.id}>
+                          <td style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>{editId === a.id ? <input value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : a.description}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>{editId === a.id ? <input value={form.category || ''} onChange={e => setForm((f: any) => ({ ...f, category: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : a.category}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>{a.timestamp?.toDate ? a.timestamp.toDate().toLocaleString() : a.timestamp ? new Date(a.timestamp).toLocaleString() : ""}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>
+                            {editId === a.id ? (
+                              <>
+                                <button onClick={() => handleUpdateActivityLog(a.id)} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Save</button>
+                                <button onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>
+                              </>
+                            ) : (
+                              <>
+                                <button onClick={() => { setEditId(a.id); setForm({ description: a.description, category: a.category }); }} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Edit</button>
+                                <button onClick={() => handleDeleteActivityLog(a.id)} style={{ background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {activityLogs.length === 0 && !error && <div>No activity logs found.</div>}
+                </>
+              )}
+              {selectedTable === 'categories' && (
+                <>
+                  <h2 style={{ color: '#4fd1c5', marginBottom: 24 }}>Categories</h2>
+                  <form onSubmit={editId ? (e) => { e.preventDefault(); handleUpdateCategory(editId); } : handleCreateCategory} style={{ marginBottom: 24, display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <input placeholder="Name" value={form.name || ''} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} required />
+                    <input placeholder="Description" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 8, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} />
+                    <button type="submit" style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '8px 20px', fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>{editId ? 'Update' : 'Add'}</button>
+                    {editId && <button type="button" onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '8px 16px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>}
+                  </form>
+                  <table style={{ width: '100%', color: 'white', background: '#23283a', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
+                    <thead>
+                      <tr style={{ background: '#2d3748' }}>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Name</th>
+                        <th style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>Description</th>
+                        <th style={{ border: '1px solid #444', padding: '12px' }}>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {categories.length === 0 && !error && <div>No categories found.</div>}
-              </>
-            )}
+                    </thead>
+                    <tbody>
+                      {categories.map((c: any) => (
+                        <tr key={c.id}>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>{editId === c.id ? <input value={form.name || ''} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : c.name}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px', textAlign: 'left' }}>{editId === c.id ? <input value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} style={{ padding: 6, borderRadius: 4, border: '1px solid #444', background: '#23283a', color: '#fff' }} /> : c.description}</td>
+                          <td style={{ border: '1px solid #444', padding: '12px' }}>
+                            {editId === c.id ? (
+                              <>
+                                <button onClick={() => handleUpdateCategory(c.id)} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Save</button>
+                                <button onClick={() => { setEditId(null); setForm({}); }} style={{ background: '#2d3748', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 500, cursor: 'pointer' }}>Cancel</button>
+                              </>
+                            ) : (
+                              <>
+                                <button onClick={() => { setEditId(c.id); setForm({ name: c.name, description: c.description }); }} style={{ background: '#4fd1c5', color: '#181c24', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, marginRight: 6, cursor: 'pointer' }}>Edit</button>
+                                <button onClick={() => handleDeleteCategory(c.id)} style={{ background: '#e53e3e', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 12px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {categories.length === 0 && !error && <div>No categories found.</div>}
+                </>
+              )}
+            </div>
           </main>
-          {/* Bottom AdSense Ad */}
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '0 0 32px 0' }}>
-            <BearAd />
-          </div>
         </div>
       )}
     </div>
