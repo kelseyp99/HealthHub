@@ -1,140 +1,123 @@
 using HealthHub.Models;
-using MongoDB.Driver;
+using Google.Cloud.Firestore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HealthHub.Services
 {
+
     public class DiscussionService
     {
-        private readonly IMongoCollection<Discussion> _discussionCollection;
-   
-        public DiscussionService(string mongoConnectionString, string databaseName)
+        private readonly FirestoreDb _firestoreDb;
+
+        public DiscussionService(string firestoreProjectId, string firestoreJsonPath)
         {
-            Console.WriteLine($"Attempting to connect to {mongoConnectionString}");
-            Console.WriteLine($"Attempting to connect to database {databaseName}");
-            // Create a new Mongo client
-            var mongoClient = new MongoClient(mongoConnectionString);
-
-            // Get the database
-            var database = mongoClient.GetDatabase(databaseName);
-
-            Console.WriteLine($"Connected to database {databaseName}");
-            Console.WriteLine("Attempting to get collection Discussion");
-            // Get the "Discussion" collection (matching the class name)
-            _discussionCollection = database.GetCollection<Discussion>("Discussion");
-
-            Console.WriteLine("Connected to collection Discussion");
+            if (string.IsNullOrEmpty(firestoreProjectId) || string.IsNullOrEmpty(firestoreJsonPath))
+            {
+                throw new ArgumentException("Firestore project ID and credentials path must be provided.");
+            }
+            Console.WriteLine($"Initializing Firestore for project {firestoreProjectId} with credentials at {firestoreJsonPath}");
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", firestoreJsonPath);
+            _firestoreDb = FirestoreDb.Create(firestoreProjectId);
+            Console.WriteLine("Connected to Firestore");
         }
 
-
-        
-
-        // Add a new discussion
-        public async Task AddDiscussionAsync(Discussion discussion)
+        // --- Firestore Methods ---
+        public async Task AddDiscussionToFirestoreAsync(Discussion discussion)
         {
-            Console.WriteLine("Starting to add a new discussion.");
+            DocumentReference docRef = _firestoreDb.Collection("Discussion").Document(discussion.Id);
+            await docRef.SetAsync(discussion);
+            Console.WriteLine($"Added discussion {discussion.Id} to Firestore.");
+        }
+
+        public async Task<Discussion> GetDiscussionFromFirestoreAsync(string id)
+        {
+            DocumentReference docRef = _firestoreDb.Collection("Discussion").Document(id);
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+            if (snapshot.Exists)
+            {
+                return snapshot.ConvertTo<Discussion>();
+            }
+            return null;
+        }
+
+        public async Task<List<Discussion>> GetAllDiscussionsFromFirestoreAsync()
+        {
+            QuerySnapshot snapshot = await _firestoreDb.Collection("Discussion").GetSnapshotAsync();
+            var discussions = new List<Discussion>();
+            foreach (var doc in snapshot.Documents)
+            {
+                discussions.Add(doc.ConvertTo<Discussion>());
+            }
+            return discussions;
+        }
+
+        // --- FirestoreTestController support methods ---
+        public async Task<bool> TestFirestoreConnectionAsync()
+        {
             try
             {
-                discussion.CreatedAt = DateTime.UtcNow;
-                discussion.UpdatedAt = DateTime.UtcNow;
-                discussion.Synced = false; // Initially not synced
-                await _discussionCollection.InsertOneAsync(discussion);
-                Console.WriteLine("Successfully added discussion to the database.");
+                var collections = _firestoreDb.ListRootCollectionsAsync();
+                await foreach (var col in collections)
+                {
+                    // Just enumerate to test connectivity
+                    _ = col.Id;
+                }
+                return true;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Error adding discussion: {ex.Message}");
-                throw;
+                return false;
             }
         }
 
-        // Update an existing discussion
-        public async Task<bool> UpdateDiscussionAsync(Discussion discussion)
+        public async Task<List<string>> ListRootCollectionsAsync()
         {
-            discussion.UpdatedAt = DateTime.UtcNow;
-
-            var result = await _discussionCollection.ReplaceOneAsync(
-                d => d.Id == discussion.Id,
-                discussion
-            );
-
-            return result.ModifiedCount > 0;
+            var collections = _firestoreDb.ListRootCollectionsAsync();
+            var names = new List<string>();
+            await foreach (var col in collections)
+            {
+                names.Add(col.Id);
+            }
+            return names;
         }
 
-        // Update an existing discussion
-        public async Task<bool> DeleteDiscussionAsync(string id)
+        public async Task<List<Discussion>> GetUserDiscussionsRawAsync(string userId)
         {
-            var result = await _discussionCollection.DeleteOneAsync(
-                d => d.Id == id
-            );
-            return result.DeletedCount > 0;
+            var snapshot = await _firestoreDb.Collection("Discussion").WhereEqualTo("UserId", userId).GetSnapshotAsync();
+            var discussions = new List<Discussion>();
+            foreach (var doc in snapshot.Documents)
+            {
+                discussions.Add(doc.ConvertTo<Discussion>());
+            }
+            return discussions;
         }
 
-        // Mark a discussion as synced
-        public async Task<bool> MarkDiscussionAsSyncedAsync(string id)
+        public async Task<List<Discussion>> GetUserDiscussionsAsync(string userId)
         {
-            var update = Builders<Discussion>.Update
-                .Set(d => d.Synced, true)
-                .Set(d => d.SyncTimestamp, DateTime.UtcNow);
-
-            var result = await _discussionCollection.UpdateOneAsync(
-                d => d.Id == id,
-                update
-            );
-
-            return result.ModifiedCount > 0;
+            // For now, same as raw
+            return await GetUserDiscussionsRawAsync(userId);
         }
 
-        public async Task<List<Discussion>> GetAllDiscussionsAsync()
-{
-    Console.WriteLine("Attempting to retrieve all discussions from the Discussion collection...");
-
-    try
-    {
-        // Check if the collection is properly initialized
-        if (_discussionCollection == null)
+        public Task<List<object>> GetUserActivityLogRawAsync(string userId)
         {
-            Console.WriteLine("Error: _discussionCollection is null. Database connection might not be initialized.");
-            throw new InvalidOperationException("Database connection is not initialized.");
+            // Placeholder: implement your Firestore activity log logic here
+            return Task.FromResult(new List<object>());
         }
 
-        // Perform the query to retrieve all discussions
-        var discussions = await _discussionCollection.Find(_ => true).ToListAsync();
-        Console.WriteLine($"Successfully retrieved {discussions.Count} discussions from the Discussion collection.");
-        return discussions;
-    }
-    catch (Exception ex)
-    {
-        // Log the exception and rethrow it for higher-level handling
-        Console.WriteLine($"Error retrieving discussions: {ex.Message}");
-        throw new ApplicationException("An error occurred while retrieving discussions.", ex);
-    }
-}
-
-        // Get a discussion by ID
-        public async Task<Discussion> GetDiscussionByIdAsync(string id)
+        public Task<List<object>> GetUserCategoryRawAsync(string userId)
         {
-            return await _discussionCollection.Find(d => d.Id == id).FirstOrDefaultAsync();
+            // Placeholder: implement your Firestore category logic here
+            return Task.FromResult(new List<object>());
         }
 
-        // Get unsynced discussions
-        public async Task<List<Discussion>> GetUnsyncedDiscussionsAsync()
+        public Task<List<object>> GetUserSummerRawAsync(string userId)
         {
-            return await _discussionCollection.Find(d => !d.Synced).ToListAsync();
+            // Placeholder: implement your Firestore summer logic here
+            return Task.FromResult(new List<object>());
         }
-        
-        /// <summary>
-        /// Retrieves all activity logs from the database.
-        /// </summary>
-        /// <returns>A list of all activity logs.</returns>
-        public async Task<List<Discussion>> GetAllDescussionAsync()
-        {
-            Console.WriteLine("Attempting to get all logs from Descussion collection");
-            var logs = await _discussionCollection.Find(_ => true).ToListAsync();
-            Console.WriteLine("Successfully retrieved all logs from Descussion collection");
-            return logs;
-        }
+
+        // All MongoDB-related methods have been removed. Add Firestore-only methods as needed.
     }
 }

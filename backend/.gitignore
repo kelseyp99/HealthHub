@@ -1,0 +1,25 @@
+# Dependencies
+bin/
+obj/
+
+# Firebase service account (NEVER commit this)
+firebase-service-account.json
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
