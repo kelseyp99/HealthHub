@@ -492,6 +492,10 @@ function App() {
               </>
             )}
           </main>
+          {/* Bottom AdSense Ad */}
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: '0 0 32px 0' }}>
+            <BearAd />
+          </div>
         </div>
       )}
     </div>
