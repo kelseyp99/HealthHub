@@ -1,12 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import './adsense-bear.css';
 import { auth, provider, db } from "./firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { collection, getDocs, orderBy, query, addDoc, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 
-
-
-
+// Import Stencil Piercing font (Google Fonts CDN) only once
+if (typeof window !== 'undefined' && !document.getElementById('stardos-stencil-font')) {
+  const stencilFontLink = document.createElement('link');
+  stencilFontLink.rel = 'stylesheet';
+  stencilFontLink.href = 'https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@700&display=swap';
+  stencilFontLink.id = 'stardos-stencil-font';
+  document.head.appendChild(stencilFontLink);
+}
+// Bear AdSense loader (robust, React-friendly)
+const ADSENSE_CLIENT = 'ca-pub-3940256099942544';
+const ADSENSE_SLOT = '6300978111'; // Official test slot for AdSense test client
+let adsenseScriptLoaded = false;
+function loadAdsenseScriptOnce() {
+  if (adsenseScriptLoaded) return;
+  if (!document.querySelector('script[src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+    script.setAttribute('data-ad-client', ADSENSE_CLIENT);
+    document.body.appendChild(script);
+    script.onload = () => { adsenseScriptLoaded = true; };
+  } else {
+    adsenseScriptLoaded = true;
+  }
+}
+function BearAd() {
+  const adRef = useRef<HTMLDivElement>(null);
+  const [adError, setAdError] = useState(false);
+  useEffect(() => {
+    loadAdsenseScriptOnce();
+    let timeout: any;
+    // Only add the ad element if not present
+    if (adRef.current && !adRef.current.querySelector('ins.adsbygoogle')) {
+      const ins = document.createElement('ins');
+      ins.className = 'adsbygoogle';
+      ins.style.display = 'block';
+      ins.style.width = '200px';
+      ins.style.height = '90px';
+      ins.style.margin = '0 auto';
+      ins.style.background = 'transparent';
+      ins.setAttribute('data-ad-client', ADSENSE_CLIENT);
+      ins.setAttribute('data-ad-slot', ADSENSE_SLOT);
+      ins.setAttribute('data-ad-format', 'auto');
+      ins.setAttribute('data-full-width-responsive', 'true');
+      adRef.current.appendChild(ins);
+    }
+    // Try to render the ad
+    function tryRenderAd() {
+      if ((window as any).adsbygoogle && adRef.current) {
+        try {
+          (window as any).adsbygoogle.push({});
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+    // Wait for script to load, then render
+    timeout = setTimeout(() => {
+      if ((window as any).adsbygoogle) {
+        tryRenderAd();
+      } else {
+        setAdError(true);
+      }
+    }, 800);
+    return () => {
+      clearTimeout(timeout);
+      // Do not remove the ad element to avoid React/SPA remount issues
+    };
+  }, []);
+  return (
+    <div className="bear-ad-container" ref={adRef}>
+      <div className="bear-emoji" role="img" aria-label="Bear">🐻</div>
+      <div className="bear-ad-title">Bear With Us!</div>
+      <div className="bear-ad-desc">This is a test Google AdSense ad. Real ads will appear here soon.</div>
+      <div className="bear-ad-powered">Powered by Google AdSense</div>
+      {adError && <div style={{color:'#e53e3e',marginTop:8,fontSize:13}}>Ad failed to load. (Test ads only show in production or with correct test slot.)</div>}
+    </div>
+  );
+}
 function App() {
   const [user, setUser] = useState(auth.currentUser);
   const [discussions, setDiscussions] = useState<any[]>([]);
@@ -231,8 +308,8 @@ function App() {
     <div className="App" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #181c24 0%, #23283a 100%)', color: '#fff', fontFamily: 'Segoe UI, sans-serif', display: 'flex', flexDirection: 'column' }}>
       <header style={{ padding: 0, margin: 0, boxShadow: '0 2px 12px 0 #0004', background: 'rgba(35,40,58,0.98)', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', background: 'transparent', padding: '18px 40px', borderBottom: '1px solid #222', minHeight: 72 }}>
-          <div style={{ fontWeight: 900, fontSize: 32, letterSpacing: 2, color: '#4fd1c5', textShadow: '0 2px 12px #2228' }}>
-            <span style={{ fontFamily: 'Montserrat, Segoe UI, sans-serif', textTransform: 'uppercase', letterSpacing: 4 }}>life</span><span style={{ color: '#fff', fontWeight: 700 }}>Log</span>
+          <div style={{ fontWeight: 900, fontSize: 32, letterSpacing: 2, color: '#4fd1c5', textShadow: '0 2px 12px #2228', fontFamily: 'Stardos Stencil, Montserrat, Segoe UI, sans-serif' }}>
+            <span style={{ fontFamily: 'Stardos Stencil, Montserrat, Segoe UI, sans-serif', textTransform: 'uppercase', letterSpacing: 4 }}>life</span><span style={{ color: '#fff', fontWeight: 700, fontFamily: 'Stardos Stencil, Montserrat, Segoe UI, sans-serif' }}>Log</span>
           </div>
           <div style={{ flex: 1 }} />
           {!user ? (
@@ -276,6 +353,8 @@ function App() {
                 }}
               >{tab.label}</button>
             ))}
+            {/* Bear AdSense Ad */}
+            <BearAd />
           </nav>
           {/* Main Content */}
           <main style={{ flex: 1, padding: '48px 48px 48px 0', overflowY: 'auto', background: 'linear-gradient(120deg, #23283a 60%, #181c24 100%)', borderRadius: 32, margin: 24, boxShadow: '0 4px 32px #0003', minHeight: 0 }}>

@@ -1,0 +1,33 @@
+/* Bear AdSense custom styles */
+.bear-ad-container {
+  background: linear-gradient(120deg, #23283a 60%, #181c24 100%);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0003;
+  padding: 18px 10px 10px 10px;
+  margin: 24px 16px 0 16px;
+  text-align: center;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+}
+.bear-emoji {
+  font-size: 2.2rem;
+  margin-bottom: 2px;
+}
+.bear-ad-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f6ad55;
+  margin-bottom: 2px;
+  letter-spacing: 1px;
+}
+.bear-ad-desc {
+  font-size: 0.98rem;
+  color: #b2f5ea;
+  margin-bottom: 2px;
+}
+.bear-ad-powered {
+  font-size: 0.8rem;
+  color: #718096;
+  margin-bottom: 2px;
+}
